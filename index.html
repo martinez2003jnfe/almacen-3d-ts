@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Almacén 3D Inteligente</title>
+<link rel="stylesheet" href="/src/style.css" />
+</head>
+<body>
+<header>
+  <h1>📦 Almacén 3D Inteligente</h1>
+  <small>Editor + optimización + visualización</small>
+</header>
+
+<div class="app">
+  <aside>
+    <section>
+      <h2>🏭 1. Espacio del almacén</h2>
+      <div class="row">
+        <div><label>Largo (m)</label><input id="L" type="number" value="200" min="1" step=".1" /></div>
+        <div><label>Ancho (m)</label><input id="A" type="number" value="100" min="1" step=".1" /></div>
+        <div><label>Altura (m)</label><input id="Z" type="number" value="8" min="1" step=".1" /></div>
+        <div><label>Carga máxima suelo (kg)</label><input id="floor" type="number" value="100000" min="1" /></div>
+      </div>
+      <button id="btnUpdateSpace">Actualizar espacio</button>
+    </section>
+
+    <section>
+      <h2>🚶 2. Pasillo / zona libre</h2>
+      <div class="row">
+        <div><label>Desde izquierda (m)</label><input id="px" type="number" value="50" min="0" step=".1" /></div>
+        <div><label>Desde arriba (m)</label><input id="pz" type="number" value="25" min="0" step=".1" /></div>
+        <div><label>Largo (m)</label><input id="pw" type="number" value="50" min="0" step=".1" /></div>
+        <div><label>Ancho (m)</label><input id="pd" type="number" value="25" min="0" step=".1" /></div>
+      </div>
+      <button id="btnUpdateAisle" class="alt">Actualizar pasillo</button>
+    </section>
+
+    <section>
+      <h2>🗄️ 3. Estanterías</h2>
+      <div class="row">
+        <div><label>Largo</label><input id="sw" type="number" value="10" min=".2" /></div>
+        <div><label>Fondo</label><input id="sd" type="number" value="2" min=".2" /></div>
+        <div><label>Altura total</label><input id="sh" type="number" value="5" min=".2" /></div>
+        <div><label>Niveles</label><input id="levels" type="number" value="4" min="1" max="20" /></div>
+        <div><label>Carga/nivel (kg)</label><input id="cap" type="number" value="1000" min=".1" /></div>
+        <div><label>X (m)</label><input id="sx" type="number" value="-70" /></div>
+        <div><label>Z (m)</label><input id="sz" type="number" value="-35" /></div>
+      </div>
+      <button id="btnAddShelf">Agregar estantería</button>
+      <button id="btnClearShelves" class="alt">Eliminar estanterías</button>
+      <p class="msg">Las estanterías se usan primero durante la optimización.</p>
+    </section>
+
+    <section>
+      <h2>🚧 4. Obstáculos</h2>
+      <div class="row">
+        <div><label>Largo</label><input id="ow" type="number" value="4" min=".1" /></div>
+        <div><label>Ancho</label><input id="od" type="number" value="4" min=".1" /></div>
+        <div><label>Alto</label><input id="oh" type="number" value="8" min=".1" /></div>
+        <div><label>X (m)</label><input id="ox" type="number" value="0" /></div>
+        <div><label>Z (m)</label><input id="oz" type="number" value="0" /></div>
+      </div>
+      <button id="btnAddObstacle">Agregar obstáculo</button>
+      <button id="btnClearObstacles" class="alt">Eliminar obstáculos</button>
+    </section>
+
+    <section>
+      <h2>📦 5. Cajas</h2>
+      <div class="row">
+        <div><label>Código</label><input id="code" value="C001" /></div>
+        <div><label>Cantidad</label><input id="qty" type="number" value="1" min="1" /></div>
+        <div><label>Largo</label><input id="bw" type="number" value="2" min=".05" step=".05" /></div>
+        <div><label>Ancho</label><input id="bd" type="number" value="1.2" min=".05" step=".05" /></div>
+        <div><label>Alto</label><input id="bh" type="number" value="1" min=".05" step=".05" /></div>
+        <div><label>Peso (kg)</label><input id="kg" type="number" value="250" min=".1" /></div>
+      </div>
+      <div class="checkbox"><input id="frag" type="checkbox" /><label for="frag">Frágil</label></div>
+      <div class="checkbox"><input id="stack" type="checkbox" checked /><label for="stack">Apilable</label></div>
+      <div class="checkbox"><input id="rot" type="checkbox" checked /><label for="rot">Permitir rotación 90°</label></div>
+      <button id="btnAddBoxes" class="good">Agregar caja</button>
+      <button id="btnClearBoxes" class="alt">Vaciar cajas</button>
+    </section>
+
+    <section>
+      <h2>🧠 6. Optimización y escenarios</h2>
+      <div class="toolbar">
+        <button id="btnOptimize" class="good">Optimizar distribución</button>
+        <button id="btnSave" class="warn">Guardar escenario</button>
+        <button id="btnLoad" class="alt">Cargar escenario</button>
+        <button id="btnNew" class="alt">Nuevo escenario</button>
+        <button id="btnExport" class="alt">Exportar diseño</button>
+        <button id="btnImportTrigger" class="alt">Importar diseño</button>
+        <input id="fileInput" class="full" type="file" accept=".json,application/json" style="display:none" />
+        <button id="btnResetCamera" class="full">Restablecer cámara</button>
+      </div>
+      <p id="msg" class="msg">Listo para configurar el almacén.</p>
+    </section>
+  </aside>
+
+  <main>
+    <div id="viewport">
+      <div id="help">Arrastra para rotar · rueda para zoom · clic en una caja para ver sus datos</div>
+    </div>
+    <div>
+      <div class="stats">
+        <div class="card">Cajas<strong id="n">0</strong></div>
+        <div class="card">Peso<strong id="wt">0 kg</strong></div>
+        <div class="card">Volumen<strong id="vol">0 m³</strong></div>
+        <div class="card">Utilización<strong id="use">0%</strong></div>
+        <div class="card">Sin ubicar<strong id="fail">0</strong></div>
+      </div>
+      <div class="tablewrap">
+        <table>
+          <thead>
+            <tr><th>Código</th><th>Dimensiones</th><th>Peso</th><th>Frágil</th><th>Ubicación</th></tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script type="module" src="/src/main.ts"></script>
+</body>
+</html>
